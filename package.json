@@ -1,0 +1,14 @@
+{
+  "name": "agenda-eletronica",
+  "version": "1.0.0",
+  "description": "Projeto de Agenda Eletrônica com Node.js e MongoDB",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.0"
+  }
+}

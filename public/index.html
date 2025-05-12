@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agenda Eletrônica</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Agenda Eletrônica</h1>
+  </header>
+
+  <main>
+    <section class="form-section">
+      <form id="formEvento">
+        <input type="text" name="titulo" placeholder="Título do Evento" required />
+        <input type="text" name="descricao" placeholder="Descrição" />
+        <input type="datetime-local" name="data" required />
+        <input type="email" name="usuarioEmail" placeholder="E-mail do Usuário" required />
+        <input type="text" name="categoria" placeholder="Categoria" required />
+        <button type="submit">Adicionar Evento</button>
+      </form>
+    </section>
+
+    <section class="eventos-section">
+      <h2>Eventos</h2>
+      <div id="listaEventos" class="eventos-lista"></div>
+    </section>
+  </main>
+
+  <script>
+    async function carregarEventos() {
+      const resposta = await fetch('/eventos');
+      const eventos = await resposta.json();
+      const lista = document.getElementById('listaEventos');
+      lista.innerHTML = '';
+      eventos.forEach(evento => {
+        const card = document.createElement('div');
+        card.className = 'evento-card';
+        card.innerHTML = `
+          <h3>${evento.titulo}</h3>
+          <p><strong>Data:</strong> ${new Date(evento.data).toLocaleString()}</p>
+          <p><strong>Usuário:</strong> ${evento.usuarioEmail}</p>
+          <p><strong>Categoria:</strong> ${evento.categoria}</p>
+          <button onclick="removerEvento('${evento._id}')">Remover</button>
+        `;
+        lista.appendChild(card);
+      });
+    }
+
+    async function removerEvento(id) {
+      await fetch(`/eventos/${id}`, { method: 'DELETE' });
+      carregarEventos();
+    }
+
+    document.getElementById('formEvento').addEventListener('submit', async e => {
+      e.preventDefault();
+      const dados = Object.fromEntries(new FormData(e.target).entries());
+      await fetch('/eventos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+      e.target.reset();
+      carregarEventos();
+    });
+
+    carregarEventos();
+  </script>
+</body>
+</html>
